@@ -1,18 +1,18 @@
 {
-  "name": "accounting-using-blockchain",
+  "name": "W12-oracle-network",
   "version": "1.0.0",
-  "description": "accounting-using-blockchain",
+  "description": "W12-oracle-network",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/w12-platform/accounting-using-blockchain.git"
+    "url": "git+https://github.com/w12-platform/W12-oracle-network.git"
   },
   "author": "Dmitriy Zhivodenko",
   "license": "ISC",
-  "homepage": "https://github.com/w12-platform/accounting-using-blockchain",
+  "homepage": "https://github.com/w12-platform/W12-oracle-network",
   "dependencies": {
 		"axios": "^0.18.0",
     "bignumber.js": "8.0.1",
