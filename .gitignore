@@ -3,7 +3,7 @@
 /build/
 /deploy/
 /lib/bulma.css.map
-/node_modules/
+node_modules
 /server/server.js
 /server/server.js.map
 /src/js/main_page.js.map

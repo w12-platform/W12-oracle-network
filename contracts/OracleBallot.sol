@@ -47,20 +47,6 @@ contract OracleBallot is Ownable
 		}
 	}
 
-	function giveRightToVote(address voter) public
-	{
-		require(
-			msg.sender == master,
-			"Only chairperson can give right to vote."
-		);
-		require(
-			!voters[voter].voted,
-			"The voter already voted."
-		);
-		require(voters[voter].weight == 0);
-		voters[voter].weight = 1;
-	}
-
 	function vote(uint proposal) public
 	{
 		Voter storage sender = voters[msg.sender];

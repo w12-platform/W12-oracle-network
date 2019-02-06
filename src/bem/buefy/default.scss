@@ -1,0 +1,76 @@
+.buefy {
+  @import "~bulma";
+  @import "~buefy/src/scss/buefy";
+
+  h2 {
+    font-size: 20px;
+    margin: 10px 0;
+  }
+
+  .container {
+    max-width: 100%;
+  }
+
+  .datepicker {
+    padding: 0;
+
+    header {
+      position: relative;
+      background: none;
+    }
+    .dropdown-item:focus, .dropdown-item:hover {
+      background: none;
+    }
+    .dropdown-menu {
+      padding: 0;
+    }
+  }
+
+  .media-content {
+    white-space: normal;
+    word-wrap: break-word;
+    width: 80%;
+  }
+
+  .btn.btn-primary {
+    background: #e94041;
+    background-image: -webkit-gradient(linear, left top, right top, from(#ff9c00), to(#ff1b46));
+    background-image: -webkit-linear-gradient(left, #ff9c00, #ff1b46);
+    background-image: -o-linear-gradient(left, #ff9c00, #ff1b46);
+    background-image: linear-gradient(to right, #ff9c00, #ff1b46);
+    color: #fff;
+    -webkit-box-shadow: 0px 0px 57px 0px rgba(254, 92, 38, 0.52);
+    box-shadow: 0px 0px 57px 0px rgba(254, 92, 38, 0.52);
+    border: none;
+    &:hover {
+      color: #fff;
+    }
+    &:active {
+      background-image: -webkit-gradient(linear, left top, right top, from(#e88a00), to(#cf1a3c));
+      background-image: -webkit-linear-gradient(left, #e88a00, #cf1a3c);
+      background-image: -o-linear-gradient(left, #e88a00, #cf1a3c);
+      background-image: linear-gradient(to right, #e88a00, #cf1a3c);
+      border: none;
+    }
+  }
+
+  .actions {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    margin-left: auto;
+    &__select {
+      margin-left: 45px;
+    }
+  }
+
+  .loading-overlay {
+    z-index: 2;
+  }
+  .notification {
+    padding: 1.75rem 2.5rem 1.75rem 1.5rem;
+  }
+}

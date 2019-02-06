@@ -1,0 +1,13 @@
+.InvestorDashboardRefund {
+  z-index: 1;
+  position: relative;
+
+  &__loader {
+    min-height: 250px;
+    p {
+      padding: 5px;
+    }
+  }
+  &__error {
+  }
+}
