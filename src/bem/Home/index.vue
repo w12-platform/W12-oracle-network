@@ -73,22 +73,17 @@
                     </div>
                     <div class="test-steps__row">
                         <div class="test-steps__cell"><span class="num">11</span></div>
-                        <div class="test-steps__cell"><a href="/receiving.html" v-html="$t('HomeStepsNum11')"></a></div>
+                        <div class="test-steps__cell"><a href="/oracle-edit.html" v-html="$t('HomeStepsNum11')"></a></div>
                         <div class="test-steps__cell"><span class="icon icon-blue">{{ $t('HomeStepsProject') }}</span></div>
                     </div>
                     <div class="test-steps__row">
                         <div class="test-steps__cell"><span class="num">12</span></div>
-                        <div class="test-steps__cell"><a href="/receiving.html" v-html="$t('HomeStepsNum12')"></a></div>
+                        <div class="test-steps__cell"><a href="/oracle-select.html" v-html="$t('HomeStepsNum12')"></a></div>
                         <div class="test-steps__cell"><span class="icon icon-blue">{{ $t('HomeStepsProject') }}</span></div>
                     </div>
                     <div class="test-steps__row">
                         <div class="test-steps__cell"><span class="num">13</span></div>
                         <div class="test-steps__cell"><a href="/receiving.html" v-html="$t('HomeStepsNum13')"></a></div>
-                        <div class="test-steps__cell"><span class="icon icon-blue">{{ $t('HomeStepsProject') }}</span></div>
-                    </div>
-                    <div class="test-steps__row">
-                        <div class="test-steps__cell"><span class="num">14</span></div>
-                        <div class="test-steps__cell"><a href="/receiving.html" v-html="$t('HomeStepsNum14')"></a></div>
                         <div class="test-steps__cell"><span class="icon icon-blue">{{ $t('HomeStepsProject') }}</span></div>
                     </div>
                 </div>
