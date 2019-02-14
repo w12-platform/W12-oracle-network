@@ -33,6 +33,13 @@
                 <option>1</option>
             </b-select>
         </b-field>
+
+         <button
+            class="btn sb100 btn-primary py-2 my-2"
+            :disabled="false">{{
+            $t('OracleEdit')}}
+        </button>
+
     </section>
 </template>
 

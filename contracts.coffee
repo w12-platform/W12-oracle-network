@@ -5,7 +5,7 @@ keys = require './keys.js'
 Eth = require 'ethjs'
 
 
-choam = artifacts.require 'CHOAM'
+oracle = artifacts.require 'OracleBallot'
 
 
 ether = (val)->
@@ -29,6 +29,91 @@ module.exports = (cb)->
 
 	eth = new Eth web3.currentProvider
 
-	wei = (val)->
-		val = to_fix val.toString(), 18
-		return Eth.toWei(val, 'ether').toString()
+	oracle = await oracle.deployed()
+
+#	try
+#		res = await oracle.addAdmin keys.user3,
+#			from: keys.owner
+#
+#		log res
+#
+#	catch err
+#		log err
+#
+#
+#	try
+#		res = await oracle.addAdmin keys.user4,
+#			from: keys.owner
+#
+#		log res
+#
+#	catch err
+#		log err
+#
+#
+#
+#	try
+#		res = await oracle.addEditVoter keys.user5, 'info1', 1, true,
+#			from: keys.user3
+#
+#		log res
+#
+#	catch err
+#		log err
+#
+#
+#	try
+#		res = await oracle.addEditVoter keys.user6, 'info1', 1, true,
+#			from: keys.user3
+#
+#		log res
+#
+#	catch err
+#		log err
+#
+#
+#	try
+#		res = await oracle.addEditVoter keys.user7, 'info1', 1, true,
+#			from: keys.user3
+#
+#		log res
+#
+#	catch err
+#		log err
+#
+#
+#	try
+#		res = await oracle.linkVoter keys.user8, keys.user6,
+#			from: keys.user3
+#
+#		log res
+#
+#	catch err
+#		log err
+#
+#
+#	try
+#		res = await oracle.linkVoter keys.user8, keys.user7,
+#			from: keys.user3
+#
+#		log res
+#
+#	catch err
+#		log err
+
+
+	try
+		res = await oracle.getVoters keys.user8, 0,
+			from: keys.user3
+
+		log res
+
+	catch err
+		log err
+
+
+
+
+
+
+

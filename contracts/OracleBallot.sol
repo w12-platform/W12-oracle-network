@@ -1,19 +1,98 @@
-pragma solidity ^0.5.3;
+pragma solidity ^0.5.0;
 
-import 'openzeppelin-solidity/contracts/ownership/Ownable.sol';
+
+
+
+/**
+ * @title Ownable
+ * @dev The Ownable contract has an owner address, and provides basic authorization control
+ * functions, this simplifies the implementation of "user permissions".
+ */
+contract Ownable {
+  address public owner;
+
+
+  event OwnershipRenounced(address indexed previousOwner);
+  event OwnershipTransferred(
+    address indexed previousOwner,
+    address indexed newOwner
+  );
+
+
+  /**
+   * @dev The Ownable constructor sets the original `owner` of the contract to the sender
+   * account.
+   */
+  constructor() public {
+    owner = msg.sender;
+  }
+
+  /**
+   * @dev Throws if called by any account other than the owner.
+   */
+  modifier onlyOwner() {
+    require(msg.sender == owner);
+    _;
+  }
+
+  /**
+   * @dev Allows the current owner to relinquish control of the contract.
+   * @notice Renouncing to ownership will leave the contract without an owner.
+   * It will not be possible to call the functions with the `onlyOwner`
+   * modifier anymore.
+   */
+  function renounceOwnership() public onlyOwner {
+    emit OwnershipRenounced(owner);
+    owner = address(0);
+  }
+
+  /**
+   * @dev Allows the current owner to transfer control of the contract to a newOwner.
+   * @param _newOwner The address to transfer ownership to.
+   */
+  function transferOwnership(address _newOwner) public onlyOwner {
+    _transferOwnership(_newOwner);
+  }
+
+  /**
+   * @dev Transfers control of the contract to a newOwner.
+   * @param _newOwner The address to transfer ownership to.
+   */
+  function _transferOwnership(address _newOwner) internal {
+    require(_newOwner != address(0));
+    emit OwnershipTransferred(owner, _newOwner);
+    owner = _newOwner;
+  }
+}
 
 
 contract OracleBallot is Ownable
 {
 
+	uint PAGE_SIZE = 10;
+
 	struct Voter
 	{
-		uint weight;
-		bool voted;
-		address addr;
-		uint vote;
+		string info;
+		uint8 voter_type;
+		bool status;
+		bool setted;
 
 	}
+
+
+	address public master;
+
+	mapping(address => bool) public admins;
+
+
+	mapping(address => Voter) public voters;
+
+	mapping(address => address[]) public proj_voters;
+	mapping(address => address[]) public voter_projs;
+
+	mapping(address => mapping(address => uint)) public proj_voters_index;
+
 
 
 	struct StageBallot
@@ -23,39 +102,100 @@ contract OracleBallot is Ownable
 		uint voteCount;
 	}
 
-	address public master;
-
-	mapping(address => Voter) public voters;
-
 
 	StageBallot[] public proposals;
 
-
-	constructor(bytes32[] memory proposalNames) public
+	constructor() public
 	{
-
 		master = msg.sender;
-		voters[master].weight = 1;
-
-		for (uint i = 0; i < proposalNames.length; i++)
-		{
-			proposals.push(StageBallot(
-				{
-					name : proposalNames[i],
-					voteCount : 0
-				}));
-		}
 	}
+
+
+	function addAdmin(address admin_addr) public
+	{
+		if(msg.sender != owner)
+		{
+			require(msg.sender == master);
+		}
+
+		admins[admin_addr] = true;
+	}
+
+	function removeAdmin(address admin_addr) public
+	{
+		if(msg.sender != owner)
+		{
+			require(msg.sender == master);
+		}
+
+		admins[admin_addr] = false;
+	}
+
+	function addEditVoter(address addr, string memory info, uint8 voter_type, bool status) public
+	{
+		require(admins[msg.sender]);
+
+		require(addr != address(0));
+
+		Voter memory voter = Voter(info, voter_type, status, true);
+
+		voters[addr] = voter;
+
+//		voters_proj[addr] = address[];
+	}
+
+
+
+	function linkVoter(address addr, address proj) public
+	{
+		require(admins[msg.sender]);
+
+		require(addr != address(0));
+
+		require(proj != address(0));
+
+//		require(voters[addr].setted);
+
+//		if(!proj_voters[proj])
+//		{
+//			proj_voters[proj] =
+//		}
+
+		proj_voters[proj].push(addr);
+		voter_projs[addr].push(addr);
+	}
+
+
+	function getVoters(address proj, uint page) external view returns (address[] memory data)
+	{
+		data = new address[](PAGE_SIZE);
+
+		uint256 start = page * PAGE_SIZE;
+
+		for(uint256 i = 0; i < PAGE_SIZE; i++)
+		{
+			if(start + i < proj_voters[proj].length)
+			{
+				data[i] = proj_voters[proj][start + i];
+			}
+		}
+
+
+
+
+	}
+
+
 
 	function vote(uint proposal) public
 	{
 		Voter storage sender = voters[msg.sender];
-		require(sender.weight != 0, "Has no right to vote");
-		require(!sender.voted, "Already voted.");
-		sender.voted = true;
-		sender.vote = proposal;
+//		require(sender.weight != 0, "Has no right to vote");
+//		require(!sender.voted, "Already voted.");
+//		sender.voted = true;
+//		sender.vote = proposal;
 
-		proposals[proposal].voteCount += sender.weight;
+//		proposals[proposal].voteCount += sender.weight;
 	}
 
 	function winningProposal() public view
@@ -67,6 +207,7 @@ contract OracleBallot is Ownable
 			if (proposals[p].voteCount > winningVoteCount)
 			{
 				winningVoteCount = proposals[p].voteCount;
+
 				winningProposal_ = p;
 			}
 		}
@@ -75,13 +216,13 @@ contract OracleBallot is Ownable
 	function winnerName() public view
 	returns (bytes32 winnerName_)
 	{
-		winnerName_ = proposals[winningProposal()].name;
+//		winnerName_ = proposals[winningProposal()].name;
 	}
 
 	function set_master(address new_master) public onlyOwner
 	{
 		require(new_master != address(0));
-		emit MastershipTransferred(master, new_master);
+//		emit MastershipTransferred(master, new_master);
 		master = new_master;
 	}
 }
