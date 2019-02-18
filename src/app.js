@@ -52,7 +52,6 @@ import ProjectDashboardTranche from 'bem/ProjectDashboardTranche';
 import Versions from 'bem/Versions';
 import MetaMask from 'bem/MetaMask';
 import OracleEdit from 'bem/OracleEdit';
-import OracleAdd from 'bem/OracleAdd';
 import OracleSelect from 'bem/OracleSelect';
 
 new Vue({
@@ -80,7 +79,6 @@ new Vue({
         ProjectDashboardTranche,
         Versions,
         OracleEdit,
-        OracleAdd,
         OracleSelect,
     },
     computed: {

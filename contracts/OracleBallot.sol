@@ -71,28 +71,25 @@ contract OracleBallot is Ownable
 
 	uint PAGE_SIZE = 10;
 
-	struct Voter
+	struct Oracle
 	{
 		string info;
-		uint8 voter_type;
+		uint8 oracle_type;
 		bool status;
 		bool setted;
-
+		address addr;
 	}
 
-
 	address public master;
-
 	mapping(address => bool) public admins;
 
+	Oracle[] public oracles;
+	mapping(address => uint) public oracles_index;
 
-	mapping(address => Voter) public voters;
+	mapping(address => address[]) public proj_oracles;
+	mapping(address => address[]) public oracle_projs;
 
-	mapping(address => address[]) public proj_voters;
-	mapping(address => address[]) public voter_projs;
-
-	mapping(address => mapping(address => uint)) public proj_voters_index;
-
+//	mapping(address => mapping(address => uint)) public proj_voters_index;
 
 
 	struct StageBallot
@@ -111,7 +108,7 @@ contract OracleBallot is Ownable
 	}
 
 
-	function addAdmin(address admin_addr) public
+	function setAdmin(address admin_addr) public
 	{
 		if(msg.sender != owner)
 		{
@@ -131,22 +128,23 @@ contract OracleBallot is Ownable
 		admins[admin_addr] = false;
 	}
 
-	function addEditVoter(address addr, string memory info, uint8 voter_type, bool status) public
+	function setOracle(address addr, string memory info, uint8 oracle_type, bool status) public
 	{
 		require(admins[msg.sender]);
 
 		require(addr != address(0));
 
-		Voter memory voter = Voter(info, voter_type, status, true);
+		Oracle memory oracle = Oracle(info, oracle_type, status, true, addr);
 
-		voters[addr] = voter;
+		uint index = oracles.push(oracle);
+
+		oracles_index[addr] = index;
 
 //		voters_proj[addr] = address[];
 	}
 
 
-
-	function linkVoter(address addr, address proj) public
+	function linkOracle(address addr, address proj) public
 	{
 		require(admins[msg.sender]);
 
@@ -161,12 +159,12 @@ contract OracleBallot is Ownable
 //			proj_voters[proj] =
 //		}
 
-		proj_voters[proj].push(addr);
-		voter_projs[addr].push(addr);
+		proj_oracles[proj].push(addr);
+//		voter_projs[addr].push(addr);
 	}
 
 
-	function getVoters(address proj, uint page) external view returns (address[] memory data)
+	function getProjOracles(address proj, uint page) external view returns (address[] memory data)
 	{
 		data = new address[](PAGE_SIZE);
 
@@ -174,22 +172,37 @@ contract OracleBallot is Ownable
 
 		for(uint256 i = 0; i < PAGE_SIZE; i++)
 		{
-			if(start + i < proj_voters[proj].length)
+			if(start + i < proj_oracles[proj].length)
 			{
-				data[i] = proj_voters[proj][start + i];
+				data[i] = proj_oracles[proj][i];
 			}
 		}
-
-
-
-
 	}
 
+
+	function getOracles(uint page) external view returns (address[] memory data, uint8[] memory types, bool[] memory statuses)
+	{
+		data = new address[](PAGE_SIZE);
+		types = new uint8[](PAGE_SIZE);
+		statuses = new bool[](PAGE_SIZE);
+
+		uint256 start = page * PAGE_SIZE;
+
+		for(uint256 i = 0; i < PAGE_SIZE; i++)
+		{
+			if(start + i < oracles.length)
+			{
+				data[i] = oracles[i].addr;
+				types[i] = oracles[i].oracle_type;
+				statuses[i] = oracles[i].status;
+			}
+		}
+	}
 
 
 	function vote(uint proposal) public
 	{
-		Voter storage sender = voters[msg.sender];
+//		Voter storage sender = voters[msg.sender];
 //		require(sender.weight != 0, "Has no right to vote");
 //		require(!sender.voted, "Already voted.");
 //		sender.voted = true;

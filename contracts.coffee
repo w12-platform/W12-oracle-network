@@ -31,79 +31,57 @@ module.exports = (cb)->
 
 	oracle = await oracle.deployed()
 
-#	try
-#		res = await oracle.addAdmin keys.user3,
-#			from: keys.owner
-#
-#		log res
-#
-#	catch err
-#		log err
-#
-#
-#	try
-#		res = await oracle.addAdmin keys.user4,
-#			from: keys.owner
-#
-#		log res
-#
-#	catch err
-#		log err
-#
-#
-#
-#	try
-#		res = await oracle.addEditVoter keys.user5, 'info1', 1, true,
-#			from: keys.user3
-#
-#		log res
-#
-#	catch err
-#		log err
-#
-#
-#	try
-#		res = await oracle.addEditVoter keys.user6, 'info1', 1, true,
-#			from: keys.user3
-#
-#		log res
-#
-#	catch err
-#		log err
-#
-#
-#	try
-#		res = await oracle.addEditVoter keys.user7, 'info1', 1, true,
-#			from: keys.user3
-#
-#		log res
-#
-#	catch err
-#		log err
-#
-#
-#	try
-#		res = await oracle.linkVoter keys.user8, keys.user6,
-#			from: keys.user3
-#
-#		log res
-#
-#	catch err
-#		log err
-#
-#
-#	try
-#		res = await oracle.linkVoter keys.user8, keys.user7,
-#			from: keys.user3
-#
-#		log res
-#
-#	catch err
-#		log err
+	try
+		res = await oracle.setAdmin keys.user3,
+			from: keys.owner
+
+		log res
+
+	catch err
+		log err
+
 
 
 	try
-		res = await oracle.getVoters keys.user8, 0,
+		res = await oracle.setOracle keys.user4, 'info4', 1, true,
+			from: keys.user3
+
+		log res
+
+	catch err
+		log err
+
+	try
+		res = await oracle.setOracle keys.user5, 'info5', 1, true,
+			from: keys.user3
+
+		log res
+
+	catch err
+		log err
+
+	try
+		res = await oracle.setOracle keys.user6, 'info6', 1, true,
+			from: keys.user3
+
+		log res
+
+	catch err
+		log err
+
+
+	try
+		res = await oracle.linkOracle keys.user4, keys.user8,
+			from: keys.user3
+
+		log res
+
+	catch err
+		log err
+
+
+	try
+		res = await oracle.getOracles 0,
 			from: keys.user3
 
 		log res
