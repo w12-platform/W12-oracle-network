@@ -10,6 +10,8 @@ if len(sys.argv) > 1:
 		os.system('truffle migrate --reset --network ropsten')
 	if sys.argv[1] == 'mainnet':
 		os.system('truffle migrate --reset --network mainnet')
+	if sys.argv[1] == 'rinkeby':
+		os.system('truffle migrate --reset --network rinkeby')
 else:
 	os.system('pm2 stop all')
 	os.system('pm2 start ganache-cli -- --mnemonic ' + seed)

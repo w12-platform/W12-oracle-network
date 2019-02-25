@@ -28,19 +28,19 @@ gas = (val, gas_price)->
 module.exports = (cb)->
 
 	eth = new Eth web3.currentProvider
+	0
 
-	oracle = await oracle.deployed()
+#	oracle = await oracle.deployed()
+	oracle = await oracle.at '0x0a4869019AfdE941F9C12a57E14604F1A0275909'.toLowerCase()
 
-	try
-		res = await oracle.setAdmin keys.user3,
-			from: keys.owner
-
-		log res
-
-	catch err
-		log err
-
-
+#	try
+#		res = await oracle.setAdmin keys.user3,
+#			from: keys.owner
+#
+#		log res
+#
+#	catch err
+#		log err
 
 	try
 		res = await oracle.setOracle keys.user4, 'info4', 1, true,
