@@ -67,6 +67,8 @@ contract OracleBallot is Ownable
 {
 
 	uint PAGE_SIZE = 10;
+	uint MAX_INFO = 512;
+	uint MAX_TYPE = 5;
 
 	struct Oracle
 	{
@@ -131,11 +133,26 @@ contract OracleBallot is Ownable
 
 		require(addr != address(0));
 
-		Oracle memory oracle = Oracle(info, oracle_type, status, true, addr);
+		bytes memory str_b = bytes(info);
 
-		uint index = oracles.push(oracle);
+		require(str_b.length <= MAX_INFO);
 
-		oracles_index[addr] = index;
+		require(oracle_type <= MAX_TYPE);
+
+		if(oracles_index[addr] == 0)
+		{
+			Oracle memory oracle = Oracle(info, oracle_type, status, true, addr);
+
+			oracles_index[addr] = oracles.push(oracle) - 1;
+		}
+		else
+		{
+			uint index = oracles_index[addr];
+
+			oracles[index].info = info;
+			oracles[index].oracle_type = oracle_type;
+			oracles[index].status = status;
+		}
 
 //		voters_proj[addr] = address[];
 	}
@@ -194,6 +211,15 @@ contract OracleBallot is Ownable
 				statuses[i] = oracles[i].status;
 			}
 		}
+	}
+
+
+	function getOracle(uint index) external view returns (string memory info, uint8 oracle_type, bool status)
+	{
+		require(index < oracles.length);
+		info = oracles[index].info;
+		oracle_type = oracles[index].oracle_type;
+		status = oracles[index].status;
 	}
 
 
