@@ -1,5 +1,4 @@
 <template>
-
 	<section class="container">
 		<h2 class="content__heading sb30">{{ $t('OracleEdit') }}</h2>
 
@@ -12,20 +11,19 @@
 					pagination-simple
 					:selected.sync="selected_oracle"
 					@click="table_click"
-					:row-class="(row, index) => selected_oracle && row.addr === selected_oracle.addr && 'is-info'"
 					detailed>
 
 				<template slot-scope="props">
 
-					<b-table-column field="date" :label="$t('OracleTableAddress')" :title="props.row.addr">
+					<b-table-column :label="$t('OracleTableAddress')" :title="props.row.addr">
 						<span class="tag is-success">{{ props.row.addr | shortAddress }}</span>
 					</b-table-column>
 
-					<b-table-column field="date" :label="$t('OracleTableType')">
+					<b-table-column :label="$t('OracleTableType')">
 						{{ props.row.type }}
 					</b-table-column>
 
-					<b-table-column field="date" :label="$t('OracleTableStatus')" centered>
+					<b-table-column :label="$t('OracleTableStatus')" centered>
 						{{ props.row.status }}
 					</b-table-column>
 
@@ -46,7 +44,7 @@
 		<div class="form-group sb30">
 			<label>{{ $t('OracleAddress') }}</label>
 			<b-field>
-				<input :value="current_addr" type="text" class="form-control"/>
+				<input v-model="current_addr" type="text" class="form-control"/>
 			</b-field>
 		</div>
 
@@ -91,475 +89,10 @@
 import './default.scss'
 import Eth from 'ethjs'
 import EthContract from 'ethjs-contract'
+import {ORACLE, ORACLE_ADDR} from 'abi/OracleBallot.js'
 
-window.log = console.log
-
-```
-var ORACLE = [
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "name": "proposals",
-      "outputs": [
-        {
-          "name": "project_addr",
-          "type": "address"
-        },
-        {
-          "name": "stage_index",
-          "type": "uint256"
-        },
-        {
-          "name": "voteCount",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function",
-      "signature": "0x013cf08b"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "name": "admins",
-      "outputs": [
-        {
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function",
-      "signature": "0x429b62e5"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "name": "oracles",
-      "outputs": [
-        {
-          "name": "info",
-          "type": "string"
-        },
-        {
-          "name": "oracle_type",
-          "type": "uint8"
-        },
-        {
-          "name": "status",
-          "type": "bool"
-        },
-        {
-          "name": "setted",
-          "type": "bool"
-        },
-        {
-          "name": "addr",
-          "type": "address"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function",
-      "signature": "0x5b69a7d8"
-    },
-    {
-      "constant": false,
-      "inputs": [],
-      "name": "renounceOwnership",
-      "outputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function",
-      "signature": "0x715018a6"
-    },
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "owner",
-      "outputs": [
-        {
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function",
-      "signature": "0x8da5cb5b"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "",
-          "type": "address"
-        },
-        {
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "name": "proj_oracles",
-      "outputs": [
-        {
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function",
-      "signature": "0xb687e38e"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "",
-          "type": "address"
-        },
-        {
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "name": "oracle_projs",
-      "outputs": [
-        {
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function",
-      "signature": "0xde2fd9d2"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "name": "oracles_index",
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function",
-      "signature": "0xeac0dc8b"
-    },
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "master",
-      "outputs": [
-        {
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function",
-      "signature": "0xee97f7f3"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "_newOwner",
-          "type": "address"
-        }
-      ],
-      "name": "transferOwnership",
-      "outputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function",
-      "signature": "0xf2fde38b"
-    },
-    {
-      "inputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "constructor",
-      "signature": "constructor"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "name": "previousOwner",
-          "type": "address"
-        }
-      ],
-      "name": "OwnershipRenounced",
-      "type": "event",
-      "signature": "0xf8df31144d9c2f0f6b59d69b8b98abd5459d07f2742c4df920b25aae33c64820"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "name": "previousOwner",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "name": "newOwner",
-          "type": "address"
-        }
-      ],
-      "name": "OwnershipTransferred",
-      "type": "event",
-      "signature": "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "admin_addr",
-          "type": "address"
-        }
-      ],
-      "name": "setAdmin",
-      "outputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function",
-      "signature": "0x704b6c02"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "admin_addr",
-          "type": "address"
-        }
-      ],
-      "name": "removeAdmin",
-      "outputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function",
-      "signature": "0x1785f53c"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "addr",
-          "type": "address"
-        },
-        {
-          "name": "info",
-          "type": "string"
-        },
-        {
-          "name": "oracle_type",
-          "type": "uint8"
-        },
-        {
-          "name": "status",
-          "type": "bool"
-        }
-      ],
-      "name": "setOracle",
-      "outputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function",
-      "signature": "0xf2faa6c1"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "addr",
-          "type": "address"
-        },
-        {
-          "name": "proj",
-          "type": "address"
-        }
-      ],
-      "name": "linkOracle",
-      "outputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function",
-      "signature": "0xcfb7f5ed"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "proj",
-          "type": "address"
-        },
-        {
-          "name": "page",
-          "type": "uint256"
-        }
-      ],
-      "name": "getProjOracles",
-      "outputs": [
-        {
-          "name": "data",
-          "type": "address[]"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function",
-      "signature": "0x1405c17c"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "page",
-          "type": "uint256"
-        }
-      ],
-      "name": "getOracles",
-      "outputs": [
-        {
-          "name": "data",
-          "type": "address[]"
-        },
-        {
-          "name": "types",
-          "type": "uint8[]"
-        },
-        {
-          "name": "statuses",
-          "type": "bool[]"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function",
-      "signature": "0x29f4e89d"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "index",
-          "type": "uint256"
-        }
-      ],
-      "name": "getOracle",
-      "outputs": [
-        {
-          "name": "info",
-          "type": "string"
-        },
-        {
-          "name": "oracle_type",
-          "type": "uint8"
-        },
-        {
-          "name": "status",
-          "type": "bool"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function",
-      "signature": "0x10a9de60"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "proposal",
-          "type": "uint256"
-        }
-      ],
-      "name": "vote",
-      "outputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function",
-      "signature": "0x0121b93f"
-    },
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "winningProposal",
-      "outputs": [
-        {
-          "name": "winningProposal_",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function",
-      "signature": "0x609ff1bd"
-    },
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "winnerName",
-      "outputs": [
-        {
-          "name": "winnerName_",
-          "type": "bytes32"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function",
-      "signature": "0xe2ba53f0"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "new_master",
-          "type": "address"
-        }
-      ],
-      "name": "set_master",
-      "outputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function",
-      "signature": "0x86795e8d"
-    }
-  ];
-```
-ORACLE_ADDR = '0x6D1595e6b18ceEB5e3D5Eee7CE35bB74484383C7'
+log = (val...)->
+	console.log val...
 
 PAGE_SIZE = 10
 
@@ -604,11 +137,7 @@ export default
 
 
 		set_oracle: ->
-
-			log @current_addr
-
 			if login.oracle
-				log @current_info
 				res = await login.oracle.setOracle @current_addr, @current_info, @current_oracle_type, @current_status,
 					from: login.account
 				@scan false
@@ -653,20 +182,23 @@ export default
 					str = ((if v is true then 'Enabled' else 'Disabled') for v in statuses)
 					for addr, i in addrs
 						if addr isnt '0x0000000000000000000000000000000000000000'
-							voters.push {addr, type: types[i].toString(), status: str[i], index: @page * PAGE_SIZE + i}
+							voters.push {addr, type: types[i].toString(), status: str[i], index: @page * PAGE_SIZE + i + 1}
 
 					for voter, i in voters
-						if @voters[i]
-							if @voters[i].addr isnt voter.addr
-								@voters[i] = voter
-							else
-								if @voters[i].type isnt voter.type
-									@voters[i].type = voter.type
-								if @voters[i].status isnt voter.status
-									@voters[i].status = voter.status
+						if @voters[i + @page * PAGE_SIZE]
+							if @voters[i + @page * PAGE_SIZE].info isnt voter.info
+								@voters[i + @page * PAGE_SIZE].info = voter.info
+							if @voters[i + @page * PAGE_SIZE].type isnt voter.type
+								@voters[i + @page * PAGE_SIZE].type = voter.type
+							if @voters[i + @page * PAGE_SIZE].status isnt voter.status
+								@voters[i + @page * PAGE_SIZE].status = voter.status
 						else
 							@voters.push voter
 
+					if addr isnt '0x0000000000000000000000000000000000000000'
+						@page = @page + 1
+					else
+						@page = 0
 
 
 			if scan_flag

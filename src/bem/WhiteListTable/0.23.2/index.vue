@@ -12,6 +12,7 @@
                 :mobile-cards="true"
                 paginated
                 per-page="10"
+       					:selected.sync="selected"
                 pagination-simple>
             <template slot-scope="props">
 
@@ -103,6 +104,16 @@
     export default {
         name: 'WhiteListTable',
         template: '#WhiteListTableTemplate',
+        data() {
+
+            if(this.selectable)
+                return {selected: null};
+            else
+                return {};
+        },
+        props:{
+            selectable: Boolean,
+        },
         filters: {
             shortAddress(value) {
                 const length = value.length;
@@ -120,7 +131,17 @@
 
             isLoading() {
                 return this.whiteMeta.loading;
-            },
+            }
         },
+        watch:{
+            'selected': function(to, from)
+            {
+                this.$emit('selected', to);
+            }
+        },
+        async created(){
+
+            this.selected = null;
+        }
     };
 </script>

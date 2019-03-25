@@ -23,6 +23,7 @@ app.get(['/crowdsale', '/crowdsale.html'], (req, res) => res.render('crowdsale.h
 app.get(['/factory', '/factory.html'], (req, res) => res.render('factory.html', { VERSION }));
 app.get(['/oracle-edit', '/oracle-edit.html'], (req, res) => res.render('oracle-edit.html', { VERSION }));
 app.get(['/oracle-select', '/oracle-select.html'], (req, res) => res.render('oracle-select.html', { VERSION }));
+app.get(['/oracle-vote', '/oracle-vote.html'], (req, res) => res.render('oracle-vote.html', { VERSION }));
 app.get(['/investor-exchange', '/investor-exchange.html'], (req, res) => res.render('investor-exchange.html', { VERSION }));
 app.get(['/investor-refund', '/investor-refund.html'], (req, res) => res.render('investor-refund.html', { VERSION }));
 app.get(['/listing', '/listing.html'], (req, res) => res.render('listing.html', { VERSION }));

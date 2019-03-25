@@ -53,6 +53,7 @@ import Versions from 'bem/Versions';
 import MetaMask from 'bem/MetaMask';
 import OracleEdit from 'bem/OracleEdit';
 import OracleSelect from 'bem/OracleSelect';
+import OracleVote from 'bem/OracleVote';
 
 new Vue({
     store,
@@ -80,6 +81,7 @@ new Vue({
         Versions,
         OracleEdit,
         OracleSelect,
+        OracleVote,
     },
     computed: {
         ...LangNS.mapState({

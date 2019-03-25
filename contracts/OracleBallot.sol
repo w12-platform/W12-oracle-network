@@ -75,7 +75,6 @@ contract OracleBallot is Ownable
 		string info;
 		uint8 oracle_type;
 		bool status;
-		bool setted;
 		address addr;
 	}
 
@@ -86,9 +85,7 @@ contract OracleBallot is Ownable
 	mapping(address => uint) public oracles_index;
 
 	mapping(address => address[]) public proj_oracles;
-	mapping(address => address[]) public oracle_projs;
-
-//	mapping(address => mapping(address => uint)) public proj_voters_index;
+	mapping(address => mapping(address => uint)) public proj_oracles_index;
 
 
 	struct StageBallot
@@ -113,6 +110,7 @@ contract OracleBallot is Ownable
 		{
 			require(msg.sender == master);
 		}
+
 
 		admins[admin_addr] = true;
 	}
@@ -141,20 +139,18 @@ contract OracleBallot is Ownable
 
 		if(oracles_index[addr] == 0)
 		{
-			Oracle memory oracle = Oracle(info, oracle_type, status, true, addr);
+			Oracle memory oracle = Oracle(info, oracle_type, status, addr);
 
-			oracles_index[addr] = oracles.push(oracle) - 1;
+			oracles_index[addr] = oracles.push(oracle);
 		}
 		else
 		{
-			uint index = oracles_index[addr];
+			uint index = oracles_index[addr] - 1;
 
 			oracles[index].info = info;
 			oracles[index].oracle_type = oracle_type;
 			oracles[index].status = status;
 		}
-
-//		voters_proj[addr] = address[];
 	}
 
 
@@ -164,31 +160,68 @@ contract OracleBallot is Ownable
 
 		require(addr != address(0));
 
+		uint index = oracles_index[addr];
+
+		require(index != 0);
+
 		require(proj != address(0));
 
-//		require(voters[addr].setted);
+		uint p_index = proj_oracles_index[proj][addr];
 
-//		if(!proj_voters[proj])
-//		{
-//			proj_voters[proj] =
-//		}
+		if(p_index == 0)
+		{
+			proj_oracles_index[proj][addr] = proj_oracles[proj].push(addr);
+		}
 
-		proj_oracles[proj].push(addr);
-//		voter_projs[addr].push(addr);
 	}
 
 
-	function getProjOracles(address proj, uint page) external view returns (address[] memory data)
+	function unlinkOracle(address addr, address proj) public
+	{
+		require(admins[msg.sender]);
+
+		require(addr != address(0));
+
+		uint index = oracles_index[addr];
+
+		require(index != 0);
+
+		require(proj != address(0));
+
+		uint p_index = proj_oracles_index[proj][addr];
+
+		require(p_index != 0);
+
+		p_index = p_index - 1;
+
+		proj_oracles[proj][p_index] = proj_oracles[proj][proj_oracles[proj].length - 1];
+
+		proj_oracles[proj].length--;
+
+		proj_oracles_index[proj][addr] = 0;
+	}
+
+
+	function getProjOracles(address proj, uint page) external view returns (address[] memory data, uint8[] memory types, bool[] memory statuses)
 	{
 		data = new address[](PAGE_SIZE);
+		types = new uint8[](PAGE_SIZE);
+		statuses = new bool[](PAGE_SIZE);
 
 		uint256 start = page * PAGE_SIZE;
+
+		uint index;
 
 		for(uint256 i = 0; i < PAGE_SIZE; i++)
 		{
 			if(start + i < proj_oracles[proj].length)
 			{
-				data[i] = proj_oracles[proj][i];
+				data[i] = proj_oracles[proj][start + i];
+				index = oracles_index[data[i]];
+				require(index != 0);
+
+				types[i] = oracles[index].oracle_type;
+				statuses[i] = oracles[index].status;
 			}
 		}
 	}
@@ -206,9 +239,9 @@ contract OracleBallot is Ownable
 		{
 			if(start + i < oracles.length)
 			{
-				data[i] = oracles[i].addr;
-				types[i] = oracles[i].oracle_type;
-				statuses[i] = oracles[i].status;
+				data[i] = oracles[start + i].addr;
+				types[i] = oracles[start + i].oracle_type;
+				statuses[i] = oracles[start + i].status;
 			}
 		}
 	}
@@ -217,6 +250,8 @@ contract OracleBallot is Ownable
 	function getOracle(uint index) external view returns (string memory info, uint8 oracle_type, bool status)
 	{
 		require(index < oracles.length);
+		require(index > 0);
+
 		info = oracles[index].info;
 		oracle_type = oracles[index].oracle_type;
 		status = oracles[index].status;

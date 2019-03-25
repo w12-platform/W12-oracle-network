@@ -31,7 +31,7 @@ module.exports = (cb)->
 
 
 #	oracle = await oracle.deployed()
-	oracle = await oracle.at '0x6D1595e6b18ceEB5e3D5Eee7CE35bB74484383C7'.toLowerCase()
+	oracle = await oracle.at '0xcB9AB5ea1301978F77B99F7d5261ed503C4dB0a9'.toLowerCase()
 
 #	try
 #		res = await oracle.setAdmin keys.user3,
@@ -41,32 +41,32 @@ module.exports = (cb)->
 #	catch err
 #		log err
 
-	try
-		res = await oracle.setOracle keys.user4, 'info4', 1, true,
-			from: keys.user3
 
-		log res
-
-	catch err
-		log err
-
-	try
-		res = await oracle.setOracle keys.user5, 'info5', 1, false,
-			from: keys.user3
-
-		log res
-
-	catch err
-		log err
-
-	try
-		res = await oracle.setOracle keys.user6, 'info6', 3, true,
-			from: keys.user3
-
-		log res
-
-	catch err
-		log err
+#	try
+#		res = await oracle.setOracle keys.user4, 'info4', 1, true,
+#			from: keys.user3
+#		log res
+#
+#	catch err
+#		log err
+#
+#	try
+#		res = await oracle.setOracle keys.user5, 'info5', 1, false,
+#			from: keys.user3
+#
+#		log res
+#
+#	catch err
+#		log err
+#
+#	try
+#		res = await oracle.setOracle keys.user6, 'info6', 3, true,
+#			from: keys.user3
+#
+#		log res
+#
+#	catch err
+#		log err
 
 
 #	try
@@ -97,10 +97,6 @@ module.exports = (cb)->
 #
 #	catch err
 #		log err
-
-
-
-
 
 
 
