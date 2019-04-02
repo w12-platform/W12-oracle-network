@@ -122,6 +122,7 @@
 
 <script lang="coffee">
 
+
 	import './default.scss'
 	import {resolveAbiVersion} from '@/lib/Blockchain/ContractsLedger'
 	import ListerSwitch from 'bem/ListerSwitch'
@@ -177,57 +178,35 @@
 
 		computed: `
 		{
-			...
-				LedgerNS.mapState({
-					ledgerMeta: 'meta',
-				}),
+			...LedgerNS.mapState({ledgerMeta: 'meta'}),
+			...WhitelistNS.mapState({tokensListMeta: 'meta', tokensList: "list"}),
+			...AccountNS.mapState({currentAccount: "currentAccount", accountMeta: "meta"}),
+			...LangNS.mapState({langMeta: 'meta'}),
+			...ConfigNS.mapState({W12Lister: 'W12Lister', W12ListerList: 'W12ListerList'}),
+			...ConfigNS.mapGetters({W12ListerLastVersion: 'W12ListerLastVersion'}),
 
-			...
-				WhitelistNS.mapState({
-					tokensListMeta: 'meta',
-					tokensList: "list"
-				}),
-			...
-				AccountNS.mapState({
-					currentAccount: "currentAccount",
-					accountMeta: "meta",
-				}),
-			...
-				LangNS.mapState({
-					langMeta: 'meta'
-				}),
-			...
-				ConfigNS.mapState({
-					W12Lister: 'W12Lister',
-					W12ListerList: 'W12ListerList'
-				}),
-			...
-				ConfigNS.mapGetters({
-					W12ListerLastVersion: 'W12ListerLastVersion'
-				}),
+			isLoading()
+			{
+				return this.tokensListMeta.loading && this.meta.loading;
+			},
 
-						isLoading()
-				{
-					return this.tokensListMeta.loading && this.meta.loading;
-				}
-			,
-				isError()
-				{
-					return this.ledgerMeta.loadingError || this.tokensListMeta.loadingError || this.accountMeta.loadingError;
-				}
-			,
-				WhiteListTableVersion()
-				{
-					const v = resolveAbiVersion(this.W12Lister.version);
-					return () => import("bem/WhiteListTable/" + v);
-				}
-			,
-				nextStepBlocked()
-				{
-					return this.isPendingTx ? this.$t('StepsBlockedTx') : false;
-				}
+			isError()
+			{
+				return this.ledgerMeta.loadingError || this.tokensListMeta.loadingError || this.accountMeta.loadingError;
+			},
 
-			}`
+			WhiteListTableVersion()
+			{
+				const v = resolveAbiVersion(this.W12Lister.version);
+				return () => import("bem/WhiteListTable/" + v);
+			},
+
+			nextStepBlocked()
+			{
+				return this.isPendingTx ? this.$t('StepsBlockedTx') : false;
+			}
+
+		}`
 
 		watch:
 			'project_oracles': (to, from)->

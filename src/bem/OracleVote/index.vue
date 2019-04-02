@@ -1,193 +1,165 @@
 <template>
-	<section class="container">
-		<h2>{{ $t('ProjectDashboard') }}</h2>
+	<div class="InvestorDashboard buefy" v-if="!langMeta.loading">
+		<section class="container">
+			<h2>{{ $t('VotingDashboard') }}</h2>
 
-		<b-notification v-if="isError" type="is-danger" :closable="false" has-icon>
+		<ListerSwitch></ListerSwitch>
+
+		<b-notification class="AdminDashboard__error" v-if="isError && !isLoading" type="is-danger" :closable="false"
+										has-icon>
 			<span v-if="ledgerMeta.loadingError">{{ $t(ledgerMeta.loadingError) }}</span>
-			<span v-if="ProjectMeta.loadingError">{{ $t(ProjectMeta.loadingError) }}</span>
-			<span v-if="accountMeta.loadingError">{{ $t(accountMeta.loadingError) }}</span>
+			<span v-if="tokensListMeta.loadingError">{{ $t(tokensListMeta.loadingError) }}</span>
+			<span v-if="accountMeta.loadingError">{{ $t(accountMeta.loadingError)  }}</span>
 		</b-notification>
 
-		<b-notification v-if="!isError && isLoading" :closable="false">
-			{{ $t('ProjectDashboardLoadExpect') }}
+		<b-notification v-if="isLoading && !isError" :closable="false" class="AdminDashboard__loader">
+			<p v-html="$t('InvestorDashboardLoadLedger')"></p>
+
 			<b-loading :is-full-page="false" :active="isLoading"></b-loading>
 		</b-notification>
 
-		<div v-if="!isLoading">
-			<ProjectSwitch v-if="!isCurrentToken"></ProjectSwitch>
-
-			<b-notification v-if="ProjectMeta.loadingProjectError" :closable="false">
-				{{ ProjectMeta.loadingProjectError }}
-			</b-notification>
-
-			<div class="ProjectDashboard__project">
-				<TokenInfo v-if="!ProjectMeta.loadingProjectError && currentProject && currentProject.version"
-									 :is="TokenInfoVersion"></TokenInfo>
-				<ProjectStages v-if="!ProjectMeta.loadingProjectError && currentProject && currentProject.version"
-											 :is="ProjectStagesVersion"></ProjectStages>
-
-				<b-loading :is-full-page="false" :active="ProjectMeta.loadingProject"></b-loading>
-			</div>
+		<div v-if="!isLoading && this.currentAccount">
+			<WhiteListTable v-on:selected="select_project" :selectable="true" :is="WhiteListTableVersion"></WhiteListTable>
 		</div>
 
-	</section>
+		<OracleRoadMap></OracleRoadMap>
+
+		</section>
+	</div>
 </template>
+
 
 <script lang="coffee">
 
 
 	import './default.scss'
+	import {resolveAbiVersion} from '@/lib/Blockchain/ContractsLedger'
+	import ListerSwitch from 'bem/ListerSwitch'
+	import Steps from "bem/Steps"
+	import WhiteListForm from "bem/WhiteListForm"
+	import OracleRoadMap from 'bem/OracleRoadMap'
+
+	import {createNamespacedHelpers} from "vuex"
+	import {CONFIG_UPDATE} from 'store/modules/Config'
+
 	import Eth from 'ethjs'
 	import EthContract from 'ethjs-contract'
 	import {ORACLE, ORACLE_ADDR} from 'abi/OracleBallot.js'
 
+	PAGE_SIZE = 10
 
-	import {resolveAbiVersion} from '@/lib/Blockchain/ContractsLedger';
-	import ProjectSwitch from 'bem/ProjectSwitch';
-	import Steps from "bem/Steps";
 
-	import {createNamespacedHelpers} from 'vuex';
-
-	LedgerNS = createNamespacedHelpers "Ledger"
-	AccountNS = createNamespacedHelpers "Account"
-	ProjectNS = createNamespacedHelpers "Project"
-	LangNS = createNamespacedHelpers "Lang"
+	LedgerNS = createNamespacedHelpers("Ledger")
+	AccountNS = createNamespacedHelpers("Account")
+	WhitelistNS = createNamespacedHelpers("Whitelist")
+	LangNS = createNamespacedHelpers("Lang")
+	ConfigNS = createNamespacedHelpers("Config")
+	TokensListNS = createNamespacedHelpers("TokensList")
 
 
 	log = (val...)->
 		console.log val...
 
 
-	PAGE_SIZE = 10
 
+	```
+	var TOKEN = { "version": "0.23.2", "listerAddress": "0xdb1278fbc18d0188ba237cf5e44bc2d930223d45", "index": 22, "ledgerAddress": "0xe00058bb67b6a65c04a6dd47ef38ce9e4ea6692f", "wTokenAddress": "0x840316f0e047f2a6942a5fb5079faefeeffc5107", "name": "tv1", "symbol": "TV1W", "tokenAddress": "0x3515809255ff273a61e546b2e50e01417e45277c", "decimals": "18", "feePercent": "0", "feeETHPercent": "0", "WTokenSaleFeePercent": "0", "trancheFeePercent": "0", "crowdsaleAddress": "0x2bf0becf7793f3b51fbc2c040f2003141a19da92", "tokensForSaleAmount": "1e+22", "wTokensIssuedAmount": "1e+22", "tokenOwners": [ "0xd9d44935b19ce0bd828498be1bd99e5453f5061e" ] };
+		```
 
 	export default
 
+		name: 'OracleVote'
+
+		components: {ListerSwitch, OracleRoadMap},
+
 		data: ->
+			meta: {loading: false}
 			voters: []
 			page: 0
+			voters_proj: {}
+			voters_proj_view: []
+			page_proj: 0
 			selected_oracle: null
-			current_addr: ''
-			current_info: ''
-			current_oracle_type: '0'
-			current_status: 'false'
+			selected_proj: null
+			proj_oracles: false
+			current_token: null
 
-		name: 'ProjectVotersDashboard'
+		filters:
+			shortAddress: (value)->
+				length = value.length
+				value.slice(0, 8) + " ... " + value.slice(length - 8, length)
 
-		components: {ProjectSwitch, Steps}
+			percentFractional: (value)->
+				value / 100
 
-		computed: `
+		computed:`
+		{
+			...LedgerNS.mapState({ledgerMeta: 'meta'}),
+			...WhitelistNS.mapState({tokensListMeta: 'meta', tokensList: "list"}),
+			...AccountNS.mapState({currentAccount: "currentAccount", accountMeta: "meta"}),
+			...LangNS.mapState({langMeta: 'meta'}),
+			...ConfigNS.mapState({W12Lister: 'W12Lister', W12ListerList: 'W12ListerList'}),
+			...ConfigNS.mapGetters({W12ListerLastVersion: 'W12ListerLastVersion'}),
+
+			isLoading()
 			{
+				return this.tokensListMeta.loading && this.meta.loading;
+			},
 
-			...
-				LedgerNS.mapState({
-					ledgerMeta: 'meta',
-				}),
-			...
-				AccountNS.mapState({
-					currentAccount: "currentAccount",
-					accountMeta: "meta",
-					currentAccountData: "currentAccountData",
-				}),
-			...
-				ProjectNS.mapState({
-					currentProject: "currentProject",
-					ProjectMeta: "meta",
-				}),
-			...
-				LangNS.mapState({
-					langMeta: 'meta'
-				}),
-						isError()
-				{
-					return this.ledgerMeta.loadingError || this.ProjectMeta.loadingError || this.accountMeta.loadingError;
-				}
-			,
-				isLoading()
-				{
-					return (
-							this.accountMeta.loading
-							|| this.ProjectMeta.loading
-					);
-				}
-			,
-				TokenInfoVersion()
-				{
-					const v = resolveAbiVersion(this.currentProject.version);
-					return () => import("bem/TokenInfo/" + v);
-				}
-			,
-				ProjectStagesVersion()
-				{
-					const v = resolveAbiVersion(this.currentProject.version);
-					return () => import("bem/ProjectStages/" + v);
-				}
-			,
-				isCurrentToken()
-				{
-					return typeof CurrentToken !== 'undefined';
-				}
+			isError()
+			{
+				return this.ledgerMeta.loadingError || this.tokensListMeta.loadingError || this.accountMeta.loadingError;
+			},
+
+			WhiteListTableVersion()
+			{
+				const v = resolveAbiVersion(this.W12Lister.version);
+				return () => import("bem/WhiteListTable/" + v);
+			},
+
+			nextStepBlocked()
+			{
+				return this.isPendingTx ? this.$t('StepsBlockedTx') : false;
 			}
-			`
 
-		watch:
-			'selected_oracle': (to, from)->
-				@current_addr = to.addr
+		},
 
-				if login.oracle
-					res = await login.oracle.getOracle to.index
-					@current_info = res.info
-					@current_oracle_type = res.oracle_type.toString()
-					@current_status = res.status
-				return
+		methods:
+		{
+			...TokensListNS.mapActions({fetch_full: "update"}),
+			...WhitelistNS.mapActions({whitelistFetch: "fetch"}),
+			...AccountNS.mapActions({watchCurrentAccount: 'watch'}),
+			...ConfigNS.mapMutations({updateLister: CONFIG_UPDATE}),
 
-			'currentAccount': ->
-				{handler: 'handleCurrentAccountChange', immediate: true}
+			async handleW12ListerChange()
+			{
+				await this.whitelistFetch();
+			}
+		}`
 
-			'currentProject': ->
-				{handler: 'handleCurrentProjectChange', immediate: true}
-
-
-			methods:`
-				{
-
-				...
-					AccountNS.mapActions({
-						watchCurrentAccount: 'watch',
-						updateAccountData: 'updateAccountData',
-					}),
-				...
-					ProjectNS.mapActions({
-						ProjectFetchList: "fetchList",
-						FetchProjectByCurrentToken: "fetchProjectByCurrentToken"
-					}),
-
-
-					async handleCurrentAccountChange(currentAccount)
-					{
-						if(currentAccount)
-						{
-							if(this.isCurrentToken)
-							{
-								await this.FetchProjectByCurrentToken(CurrentToken);
-							}
-							else
-							{
-								await this.ProjectFetchList();
-							}
-						}
-					},
-					async handleCurrentProjectChange()
-					{
-						window.dispatchEvent(new Event('resize'));
-					}
-				}
-		`
-		mounted: ->
-			return
 
 		created: ->
-#			await this.watchCurrentAccount()
+			@meta.loading = true;
+			if @W12Lister and @W12ListerLastVersion and this.W12Lister.address isnt this.W12ListerLastVersion.address
+				@updateLister({W12Lister: this.W12ListerLastVersion});
+			else
+				await @whitelistFetch()
+			@meta.loading = false
+			window.dispatchEvent new Event('resize')
+
+			return
+
+		mounted: ->
+
+			@select_project = (val)=>
+				@selected_proj = val
+
+#				@test_voters()
+#				@voters_proj_view = @voters_proj[@selected_proj.wTokenAddress].voters
+
+				await @fetch_full val
+				return
+
 			return
 
 </script>
