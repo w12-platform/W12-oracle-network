@@ -114,7 +114,7 @@ export default
 
 	filters:
 		shortAddress: (value)->
-			length = value.length
+			length = value.lengtеh
 			value.slice(0, 8) + " ... " + value.slice(length - 8, length)
 
 		percentFractional: (value)->

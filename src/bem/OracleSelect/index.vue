@@ -327,6 +327,8 @@
 
 						proj_key = @selected_proj.wTokenAddress
 
+						log proj_key
+
 						res = await login.oracle.getProjOracles proj_key, @voters_proj[proj_key].page
 						voters_proj = []
 						if res["0"]

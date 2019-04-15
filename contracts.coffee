@@ -31,15 +31,15 @@ module.exports = (cb)->
 
 
 #	oracle = await oracle.deployed()
-	oracle = await oracle.at '0xcB9AB5ea1301978F77B99F7d5261ed503C4dB0a9'.toLowerCase()
+	oracle = await oracle.at '0x76332d29b41a027162ee477b8e2692af6447e462'.toLowerCase()
 
-#	try
-#		res = await oracle.setAdmin keys.user3,
-#			from: keys.owner
-#		log res
-#
-#	catch err
-#		log err
+	try
+		res = await oracle.setAdmin keys.user3,
+			from: keys.owner
+		log res
+
+	catch err
+		log err
 
 
 #	try

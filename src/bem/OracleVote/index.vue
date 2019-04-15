@@ -154,6 +154,8 @@
 			@select_project = (val)=>
 				@selected_proj = val
 
+				log val
+
 #				@test_voters()
 #				@voters_proj_view = @voters_proj[@selected_proj.wTokenAddress].voters
 
