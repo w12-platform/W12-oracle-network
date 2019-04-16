@@ -233,6 +233,8 @@ contract OracleBallot is Ownable
 		}
 	}
 
+	event Log(address from, uint len);
+
 
 	function linkOracle(address addr, address proj) public
 	{
@@ -242,17 +244,21 @@ contract OracleBallot is Ownable
 
 		uint index = oracles_index[addr];
 
+
 		require(index != 0);
 
 		require(proj != address(0));
 
 		uint p_index = proj_oracles_index[proj][addr];
 
+		emit Log(proj, p_index);
+
 		if(p_index == 0)
 		{
 			proj_oracles_index[proj][addr] = proj_oracles[proj].push(addr);
-		}
 
+			emit Log(proj, proj_oracles_index[proj][addr]);
+		}
 	}
 
 
@@ -288,20 +294,21 @@ contract OracleBallot is Ownable
 		types = new uint8[](PAGE_SIZE);
 		statuses = new bool[](PAGE_SIZE);
 
-		uint256 start = page * PAGE_SIZE;
+		uint start = page * PAGE_SIZE;
 
 		uint index;
 
-		for(uint256 i = 0; i < PAGE_SIZE; i++)
+		for(uint i = 0; i < PAGE_SIZE; i++)
 		{
 			if(start + i < proj_oracles[proj].length)
 			{
 				data[i] = proj_oracles[proj][start + i];
 				index = oracles_index[data[i]];
-				require(index != 0);
-
-				types[i] = oracles[index].oracle_type;
-				statuses[i] = oracles[index].status;
+				if(index != 0)
+				{
+					types[i] = oracles[index - 1].oracle_type;
+					statuses[i] = oracles[index - 1].status;
+				}
 			}
 		}
 	}
@@ -355,6 +362,10 @@ contract OracleBallot is Ownable
 
 		require(proj_oracles_index[token][msg.sender] != 0);
 
+		uint index = oracles_index[msg.sender];
+
+		require(oracles[index].status);
+
 		bool vote_flag = false;
 
 		for(uint i = 0; i < vote_data[token][milestone_index].length; i++)
@@ -374,7 +385,7 @@ contract OracleBallot is Ownable
 
 		vote_data[token][milestone_index].push(Vote(msg.sender, vote_y));
 
-		emit Log(token);
+//		emit Log(token);
 	}
 
 

@@ -485,7 +485,7 @@ var ORACLE = [
     }
   ];
 
-var ORACLE_ADDR = '0x76332d29b41a027162ee477b8e2692af6447e462';
+var ORACLE_ADDR = '0x575001e6c0bd92af5f96c4cee2f7969c2c87f821';
 
 export {ORACLE, ORACLE_ADDR};
 

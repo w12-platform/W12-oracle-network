@@ -31,7 +31,7 @@ module.exports = (cb)->
 
 
 #	oracle = await oracle.deployed()
-	oracle = await oracle.at '0x76332d29b41a027162ee477b8e2692af6447e462'.toLowerCase()
+	oracle = await oracle.at '0x87a13a6419deb5b39672e641e01ed0c4660e2dfa'.toLowerCase()
 
 	try
 		res = await oracle.setAdmin keys.user3,

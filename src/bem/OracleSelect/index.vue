@@ -104,14 +104,16 @@
 		<button
 			v-if="proj_oracles"
 			class="btn btn-primary py-2 my-2"
-			:disabled="false">{{
+			:disabled="false"
+			@click="unlink_oracle">{{
 			$t('UnlinkOracleToProject')}}
 		</button>
 
 		<button
 			v-else
 			class="btn btn-primary py-2 my-2"
-			:disabled="false">{{
+			:disabled="false"
+			@click="link_oracle">{{
 			$t('LinkOracleToProject')}}
 		</button>
 
@@ -255,6 +257,22 @@
 
 		mounted: ->
 
+			@link_oracle = =>
+				if login.oracle and @selected_oracle and @selected_proj and not @proj_oracles
+					log @selected_oracle.addr
+					log @selected_proj.wTokenAddress
+#					res = await login.oracle.linkOracle @selected_oracle.addr, @selected_proj.wTokenAddress,
+#						from: login.account
+				return
+
+
+			@unlink_oracle = ->
+				if login.oracle
+					res = await login.oracle.unlinkOracle @current_addr, @current_info, @current_oracle_type, @current_status,
+						from: login.account
+				return
+
+
 			@select_project = (val)=>
 				@selected_proj = val
 				@test_voters()
@@ -321,13 +339,11 @@
 							@page = 0
 
 
-					if @selected_proj
+					if @selected_proj and @proj_oracles
 
 						@test_voters()
 
 						proj_key = @selected_proj.wTokenAddress
-
-						log proj_key
 
 						res = await login.oracle.getProjOracles proj_key, @voters_proj[proj_key].page
 						voters_proj = []
