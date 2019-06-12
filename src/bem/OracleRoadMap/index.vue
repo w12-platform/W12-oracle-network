@@ -1,6 +1,6 @@
 <template>
     <div class="RoadMap buefy" v-if="currentToken && roadMapTableData && roadMapTableData.length">
-        <h2 v-html="$t('RoadMapTitle')"></h2>
+        <h2 v-html="$t('RoadMapTableTitle')"></h2>
         <b-table :data="roadMapTableData" class="table table-striped table-bordered table-responsive-sm"
                  :mobile-cards="false">
             <template slot-scope="props">
@@ -22,13 +22,30 @@
                 <b-table-column field="refund" :label="$t('RoadMapFinancing')" centered>
                     <b-tag class="is-success py-2">{{ props.row.financing }}%</b-tag>
                 </b-table-column>
-                <b-table-column field="refund" :label="$t('RoadMapFinancing')" centered>
-                    <b-tag class="is-success py-2">{{ props.row.financing }}%</b-tag>
+
+                <b-table-column field="vote" :label="$t('VoteResultRoadmapTable')" centered>
+                    <b-tag v-if="props.row.vote_result() == 1" class="is-danger py-2">{{props.row.vote}}</b-tag>
+                    <b-tag v-if="props.row.vote_result() == 2" class="is-success py-2">{{props.row.vote}}</b-tag>
+                    <b-tag v-if="props.row.vote_result() == 0" >-/-/-</b-tag>
                 </b-table-column>
+
+                <b-table-column field="vote" :label="$t('VoteRoadmapTable')" centered>
+                    <button class="button is-success is-small sb1">Yes</button>
+                    <button class="button is-danger is-small">No</button>
+                </b-table-column>
+
             </template>
         </b-table>
     </div>
 </template>
+
+<style scoped>
+    .sb1
+    {
+        margin-bottom: 10px;
+    }
+
+</style>
 
 
 <script>
@@ -98,6 +115,19 @@
                                     to: this.fullDateFormat(milestones[index + 1].endDate)
                                 }),
                             'financing': milestone.tranchePercent,
+                            'vote': milestone.vote_y + '/' + milestone.vote_n + '/' + milestone.vote_all,
+                            'vote_result': function()
+                                {
+                                    if(milestone.vote_y == '0')
+                                    {
+                                        return 1;
+                                    }
+                                    if(milestone.vote_y == '1')
+                                    {
+                                        return 0;
+                                    }
+
+                                },
                         }
                     });
                     return list.filter(Boolean);
