@@ -167,6 +167,7 @@
 			selected_oracle: null
 			selected_proj: null
 			proj_oracles: false
+			link_oracle: ->
 
 
 		filters:
@@ -251,6 +252,7 @@
 				await @whitelistFetch()
 			@meta.loading = false
 			window.dispatchEvent new Event('resize')
+
 
 			return
 
