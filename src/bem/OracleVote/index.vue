@@ -22,6 +22,16 @@
 			<WhiteListTable v-on:selected="select_project" :selectable="true" :is="WhiteListTableVersion"></WhiteListTable>
 		</div>
 
+		<b-notification
+			type="is-warning"
+			aria-close-label="Close notification"
+			role="alert">
+
+			Vote neeeded!!!
+
+
+		</b-notification>
+
 		<OracleRoadMap></OracleRoadMap>
 
 		</section>
@@ -83,6 +93,8 @@
 			selected_proj: null
 			proj_oracles: false
 			current_token: null
+			milestone: 0
+
 
 		filters:
 			shortAddress: (value)->
@@ -100,6 +112,7 @@
 			...LangNS.mapState({langMeta: 'meta'}),
 			...ConfigNS.mapState({W12Lister: 'W12Lister', W12ListerList: 'W12ListerList'}),
 			...ConfigNS.mapGetters({W12ListerLastVersion: 'W12ListerLastVersion'}),
+			...TokensListNS.mapState({tokensListMeta: 'meta', tokensList: 'list', currentToken: 'currentToken'}),
 
 			isLoading()
 			{
@@ -154,13 +167,66 @@
 			@select_project = (val)=>
 				@selected_proj = val
 
-				log val
-
 #				@test_voters()
 #				@voters_proj_view = @voters_proj[@selected_proj.wTokenAddress].voters
 
 				await @fetch_full val
+
+				log @currentToken
+
+
 				return
+
+			@scan = (scan_flag)->
+				if window.login is undefined or window.login.eth is undefined
+					window.login = {}
+					if typeof(web3) is 'undefined'
+						window.addEventListener 'message', ({data}) =>
+							if data and data.type and data.type is 'ETHEREUM_PROVIDER_SUCCESS'
+								window.login.eth = new Eth 'ethereum'
+						window.postMessage {type: 'ETHEREUM_PROVIDER_REQUEST'}, '*'
+
+					else
+						window.login.eth = new Eth web3.currentProvider
+
+				if login.eth
+					try
+						arr = await login.eth.accounts()
+						if arr.length > 0
+							login.account = arr[0]
+						else
+							login.account = null
+					catch err
+						login.account = null
+					contract = new EthContract login.eth
+					login.oracle = (contract(ORACLE)).at ORACLE_ADDR
+
+				if login.oracle and @selected_proj
+					if @currentToken.crowdSaleInformation and @currentToken.crowdSaleInformation.milestones
+						if @currentToken.crowdSaleInformation.milestones.length > 0
+							res = await login.oracle.get_vote_result @selected_proj.crowdsaleAddress, @milestone
+							@currentToken.crowdSaleInformation.milestones[@milestone].vote_y = parseInt(res.vote_y.toString())
+							@currentToken.crowdSaleInformation.milestones[@milestone].vote_n = parseInt(res.vote_n.toString())
+							@currentToken.crowdSaleInformation.milestones[@milestone].vote_all = parseInt(res.vote_all.toString())
+
+							unless @currentToken.asd
+								@$set(@currentToken, 'asd', 1)
+							else
+								@$set(@currentToken, 'asd', @currentToken.asd + 1)
+
+							@milestone++
+							if @milestone >= @currentToken.crowdSaleInformation.milestones.length
+								@milestone = 0
+
+
+				if scan_flag
+					setTimeout =>
+						@scan scan_flag
+					, 10000
+
+					return
+
+			@scan true
 
 			return
 
