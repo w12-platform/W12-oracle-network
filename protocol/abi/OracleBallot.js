@@ -4,28 +4,31 @@ var ORACLE = [
       "inputs": [
         {
           "name": "",
-          "type": "uint256"
-        }
-      ],
-      "name": "proposals",
-      "outputs": [
-        {
-          "name": "project_addr",
           "type": "address"
         },
         {
-          "name": "stage_index",
+          "name": "",
           "type": "uint256"
         },
         {
-          "name": "voteCount",
+          "name": "",
           "type": "uint256"
+        }
+      ],
+      "name": "vote_data",
+      "outputs": [
+        {
+          "name": "voter",
+          "type": "address"
+        },
+        {
+          "name": "vote_y",
+          "type": "bool"
         }
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function",
-      "signature": "0x013cf08b"
+      "type": "function"
     },
     {
       "constant": true,
@@ -44,8 +47,7 @@ var ORACLE = [
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function",
-      "signature": "0x429b62e5"
+      "type": "function"
     },
     {
       "constant": true,
@@ -76,8 +78,7 @@ var ORACLE = [
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function",
-      "signature": "0x5b69a7d8"
+      "type": "function"
     },
     {
       "constant": false,
@@ -86,8 +87,7 @@ var ORACLE = [
       "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
-      "type": "function",
-      "signature": "0x715018a6"
+      "type": "function"
     },
     {
       "constant": true,
@@ -101,8 +101,7 @@ var ORACLE = [
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function",
-      "signature": "0x8da5cb5b"
+      "type": "function"
     },
     {
       "constant": true,
@@ -125,8 +124,7 @@ var ORACLE = [
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function",
-      "signature": "0xb687e38e"
+      "type": "function"
     },
     {
       "constant": true,
@@ -149,8 +147,7 @@ var ORACLE = [
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function",
-      "signature": "0xd98696a2"
+      "type": "function"
     },
     {
       "constant": true,
@@ -169,8 +166,7 @@ var ORACLE = [
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function",
-      "signature": "0xeac0dc8b"
+      "type": "function"
     },
     {
       "constant": true,
@@ -184,8 +180,7 @@ var ORACLE = [
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function",
-      "signature": "0xee97f7f3"
+      "type": "function"
     },
     {
       "constant": false,
@@ -199,15 +194,42 @@ var ORACLE = [
       "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
-      "type": "function",
-      "signature": "0xf2fde38b"
+      "type": "function"
     },
     {
       "inputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
-      "type": "constructor",
-      "signature": "constructor"
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "len",
+          "type": "uint256"
+        }
+      ],
+      "name": "Log",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "from",
+          "type": "address"
+        }
+      ],
+      "name": "Log",
+      "type": "event"
     },
     {
       "anonymous": false,
@@ -219,8 +241,7 @@ var ORACLE = [
         }
       ],
       "name": "OwnershipRenounced",
-      "type": "event",
-      "signature": "0xf8df31144d9c2f0f6b59d69b8b98abd5459d07f2742c4df920b25aae33c64820"
+      "type": "event"
     },
     {
       "anonymous": false,
@@ -237,8 +258,7 @@ var ORACLE = [
         }
       ],
       "name": "OwnershipTransferred",
-      "type": "event",
-      "signature": "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0"
+      "type": "event"
     },
     {
       "constant": false,
@@ -252,8 +272,7 @@ var ORACLE = [
       "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
-      "type": "function",
-      "signature": "0x704b6c02"
+      "type": "function"
     },
     {
       "constant": false,
@@ -267,8 +286,7 @@ var ORACLE = [
       "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
-      "type": "function",
-      "signature": "0x1785f53c"
+      "type": "function"
     },
     {
       "constant": false,
@@ -294,8 +312,7 @@ var ORACLE = [
       "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
-      "type": "function",
-      "signature": "0xf2faa6c1"
+      "type": "function"
     },
     {
       "constant": false,
@@ -313,8 +330,7 @@ var ORACLE = [
       "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
-      "type": "function",
-      "signature": "0xcfb7f5ed"
+      "type": "function"
     },
     {
       "constant": false,
@@ -332,8 +348,7 @@ var ORACLE = [
       "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
-      "type": "function",
-      "signature": "0x02bd0be3"
+      "type": "function"
     },
     {
       "constant": true,
@@ -364,8 +379,7 @@ var ORACLE = [
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function",
-      "signature": "0x1405c17c"
+      "type": "function"
     },
     {
       "constant": true,
@@ -392,8 +406,7 @@ var ORACLE = [
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function",
-      "signature": "0x29f4e89d"
+      "type": "function"
     },
     {
       "constant": true,
@@ -420,53 +433,64 @@ var ORACLE = [
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function",
-      "signature": "0x10a9de60"
+      "type": "function"
     },
     {
       "constant": false,
       "inputs": [
         {
-          "name": "proposal",
+          "name": "crowdsale_addr",
+          "type": "address"
+        },
+        {
+          "name": "milestone_index",
           "type": "uint256"
+        },
+        {
+          "name": "vote_y",
+          "type": "bool"
         }
       ],
       "name": "vote",
       "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
-      "type": "function",
-      "signature": "0x0121b93f"
+      "type": "function"
     },
     {
       "constant": true,
-      "inputs": [],
-      "name": "winningProposal",
-      "outputs": [
+      "inputs": [
         {
-          "name": "winningProposal_",
+          "name": "crowdsale_addr",
+          "type": "address"
+        },
+        {
+          "name": "milestone_index",
           "type": "uint256"
         }
       ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function",
-      "signature": "0x609ff1bd"
-    },
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "winnerName",
+      "name": "get_vote_result",
       "outputs": [
         {
-          "name": "winnerName_",
-          "type": "bytes32"
+          "name": "vote_y",
+          "type": "uint256"
+        },
+        {
+          "name": "vote_n",
+          "type": "uint256"
+        },
+        {
+          "name": "vote_all",
+          "type": "uint256"
+        },
+        {
+          "name": "can_vote",
+          "type": "bool"
         }
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function",
-      "signature": "0xe2ba53f0"
+      "type": "function"
     },
     {
       "constant": false,
@@ -480,12 +504,11 @@ var ORACLE = [
       "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
-      "type": "function",
-      "signature": "0x86795e8d"
+      "type": "function"
     }
   ];
 
-var ORACLE_ADDR = '0x575001e6c0bd92af5f96c4cee2f7969c2c87f821';
+var ORACLE_ADDR = '0x09da4bee8ddad5df8b5bd354bd453652f25e6b62';
 
 export {ORACLE, ORACLE_ADDR};
 
