@@ -98,5 +98,16 @@ module.exports = (cb)->
 #	catch err
 #		log err
 
+asd =
+	asd: 11
+	asdasd: ->
 
 
+setTimeout =>
+	@scan scan_flag
+	, 10000
+
+
+
+
+#node -e "setTimeout(function(){console.log('asdasd')}, 1000)"

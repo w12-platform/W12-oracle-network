@@ -53,6 +53,25 @@ export const CACHE_MAP = {
                 'swap', 'crowdsale', 'trancheFeePercent'
             ],
             TokenExchanger: ['version']
+        },
+
+        "0.24.1": {
+            DetailedERC20: ['name', 'symbol', 'decimals'],
+            WToken: ['name', 'symbol', 'decimals'],
+            W12Lister: ['version', 'exchanger', 'serviceWallet', 'factory', 'getExchanger'],
+            W12TokenLedger: ['version'],
+            W12FundFactory: ['version'],
+            W12CrowdsaleFactory: ['version'],
+            W12AtomicSwap: ['version', 'ledger'],
+            W12Crowdsale: [
+                'originToken', 'WTokenSaleFeePercent', 'version', 'serviceWallet',
+                'swap', 'serviceFee', 'fund', 'token', 'getWToken', 'getFund'
+            ],
+            W12Fund: [
+                'wToken', 'totalTranchePercentReleased', 'tokenDecimals', 'version', 'serviceWallet',
+                'swap', 'crowdsale', 'trancheFeePercent'
+            ],
+            TokenExchanger: ['version']
         }
     }
 };

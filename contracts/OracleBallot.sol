@@ -314,6 +314,7 @@ contract OracleBallot is Ownable
 	}
 
 
+
 	function getOracles(uint page) external view returns (address[] memory data, uint8[] memory types, bool[] memory statuses)
 	{
 		data = new address[](PAGE_SIZE);
@@ -389,13 +390,53 @@ contract OracleBallot is Ownable
 	}
 
 
-	function get_vote_result(address crowdsale_addr, uint milestone_index) public view returns(uint vote_y, uint vote_n, uint vote_all)
+	function get_vote_result(address crowdsale_addr, uint milestone_index) public view returns(uint vote_y, uint vote_n, uint vote_all, bool can_vote)
 	{
+		bytes memory name;
+		uint32 end_date;
+		uint32 vote_end;
+		uint32 withdrawal;
+
+
 		W12Crowdsale sale = W12Crowdsale(crowdsale_addr);
 
 		address token = address(sale.getWToken());
 
-		for(uint i = 0; i < vote_data[token][milestone_index].length; i++)
+		uint i;
+
+		can_vote = true;
+
+		if(msg.sender != address(0))
+		{
+			if(proj_oracles_index[token][msg.sender] == 0)
+				can_vote = false;
+
+			uint index = oracles_index[msg.sender];
+
+			if(!oracles[index].status)
+				can_vote = false;
+
+
+
+			for(i = 0; i < vote_data[token][milestone_index].length; i++)
+			{
+				if(vote_data[token][milestone_index][i].voter == msg.sender)
+				{
+					can_vote = false;
+				}
+			}
+
+			(end_date, i, vote_end, withdrawal, name, name) = sale.getMilestone(milestone_index);
+
+//			if(now < end_date || now > vote_end)
+//				can_vote = false;
+		}
+		else
+		{
+			can_vote = false;
+		}
+
+		for(i = 0; i < vote_data[token][milestone_index].length; i++)
 		{
 			if(vote_data[token][milestone_index][i].vote_y)
 			{
@@ -407,10 +448,22 @@ contract OracleBallot is Ownable
 			}
 		}
 
-		vote_all = proj_oracles[token].length;
+		vote_all = 0;
+
+		for(i = 0; i < proj_oracles[token].length; i++)
+		{
+			uint index = oracles_index[proj_oracles[token][i]];
+
+			if(index != 0)
+			{
+				if(oracles[index].status)
+				{
+					vote_all++;
+				}
+			}
+
+		}
 	}
-
-
 
 
 	function set_master(address new_master) public onlyOwner

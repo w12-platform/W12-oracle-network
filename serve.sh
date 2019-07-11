@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-npm run serve
+npm run serve-trn
 
